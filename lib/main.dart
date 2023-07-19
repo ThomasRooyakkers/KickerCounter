@@ -27,15 +27,27 @@ class MyApp extends StatelessWidget {
 class ScoreState extends ChangeNotifier {
   var scoreLeft = 0;
   var scoreRight = 0;
+  var winner = '';
   final scoreDifference = 2;
 
   void calculateScore() {
-    if (scoreLeft >= 10 && scoreRight >= 10) {
+    if (scoreLeft == 11) {
+      winner = 'Left';
+    } else if (scoreRight == 11) {
+      winner = 'Right';
+    } else if (scoreLeft >= 10 && scoreRight >= 10) {
       if ((scoreLeft - scoreRight).abs() >= scoreDifference) {
-        print('youre de winnare');
+        winner = scoreLeft > scoreRight ? 'Left' : 'Right';
+      } else {
+        winner = '';
       }
     }
     notifyListeners();
+  }
+
+  void resetScore() {
+    scoreLeft = 0;
+    scoreRight = 0;
   }
 
   void incrementscoreLeft() {
