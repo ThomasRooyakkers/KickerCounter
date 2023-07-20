@@ -28,25 +28,63 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class WinnerPopup extends StatelessWidget {
+  final String winner;
+
+  const WinnerPopup({required this.winner});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Center(child: Text("Winner!"),),
+      content: Text('$winner is the winner!'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Align(
+            alignment: Alignment.center,
+            child: ( Text("Next Game")),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class ScoreState extends ChangeNotifier {
   var scoreLeft = 0;
   var scoreRight = 0;
   var winner = '';
   final scoreDifference = 2;
 
-  void calculateScore() {
-    if (scoreLeft == 11) {
+  void calculateScore(BuildContext context) {
+    if (scoreLeft == 11 && scoreRight < 10) {
       winner = 'Left';
-    } else if (scoreRight == 11) {
+      _showWinnerPopup(context, winner);
+    } else if (scoreRight == 11 && scoreLeft < 10) {
       winner = 'Right';
+      _showWinnerPopup(context, winner);
     } else if (scoreLeft >= 10 && scoreRight >= 10) {
       if ((scoreLeft - scoreRight).abs() >= scoreDifference) {
         winner = scoreLeft > scoreRight ? 'Left' : 'Right';
+        _showWinnerPopup(context, winner);
       } else {
         winner = '';
       }
     }
     notifyListeners();
+  }
+
+  void _showWinnerPopup(BuildContext context, String winner) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return WinnerPopup(winner: winner);
+      },
+    );
+    resetScore();
   }
 
   void resetScore() {
@@ -78,18 +116,18 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     var scoreState = context.watch<ScoreState>();
     const style = TextStyle(
-        color: Colors.white, fontWeight: FontWeight.normal, fontSize: 64);
+        color: Colors.white, fontWeight: FontWeight.normal, fontSize: 96);
     return Scaffold(
       body: Row(children: [
         Expanded(
             child: GestureDetector(
                 onTap: () {
                   scoreState.incrementscoreLeft();
-                  scoreState.calculateScore();
+                  scoreState.calculateScore(context);
                 },
                 onLongPress: () {
                   scoreState.reduceScoreLeft();
-                  scoreState.calculateScore();
+                  scoreState.calculateScore(context);
                 },
                 child: Container(
                   color: Colors.red,
@@ -104,11 +142,11 @@ class MyHomePage extends StatelessWidget {
             child: GestureDetector(
           onTap: () {
             scoreState.incrementScoreRight();
-            scoreState.calculateScore();
+            scoreState.calculateScore(context);
           },
           onLongPress: () {
             scoreState.reduceScoreRight();
-            scoreState.calculateScore();
+            scoreState.calculateScore(context);
           },
           child: Container(
             color: Colors.blue,
@@ -124,7 +162,7 @@ class MyHomePage extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
           onPressed: () {
             scoreState.resetScore();
-            scoreState.calculateScore();
+            scoreState.calculateScore(context);
           },
           child: const Icon(Icons.autorenew)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
