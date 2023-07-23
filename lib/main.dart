@@ -36,7 +36,9 @@ class WinnerPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Center(child: Text("Winner!"),),
+      title: const Center(
+        child: Text("Winner!"),
+      ),
       content: Text('$winner is the winner!'),
       actions: [
         TextButton(
@@ -45,7 +47,7 @@ class WinnerPopup extends StatelessWidget {
           },
           child: const Align(
             alignment: Alignment.center,
-            child: ( Text("Next Game")),
+            child: (Text("Next Game")),
           ),
         ),
       ],
@@ -92,7 +94,13 @@ class ScoreState extends ChangeNotifier {
     scoreRight = 0;
   }
 
-  void incrementscoreLeft() {
+  void switchScores() {
+    var temp = scoreLeft;
+    scoreLeft = scoreRight;
+    scoreRight = temp;
+  }
+
+  void incrementScoreLeft() {
     scoreLeft++;
   }
 
@@ -117,54 +125,107 @@ class MyHomePage extends StatelessWidget {
     var scoreState = context.watch<ScoreState>();
     const style = TextStyle(
         color: Colors.white, fontWeight: FontWeight.normal, fontSize: 96);
+
     return Scaffold(
-      body: Row(children: [
-        Expanded(
-            child: GestureDetector(
-                onTap: () {
-                  scoreState.incrementscoreLeft();
-                  scoreState.calculateScore(context);
-                },
-                onLongPress: () {
-                  scoreState.reduceScoreLeft();
-                  scoreState.calculateScore(context);
-                },
-                child: Container(
-                  color: Colors.red,
-                  child: Center(
-                    child: Text(
-                      scoreState.scoreLeft.toString(),
-                      style: style,
+      body: Stack(
+        children: [
+          // Row containing the GestureDetector widgets
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    scoreState.incrementScoreLeft();
+                    scoreState.calculateScore(context);
+                  },
+                  onLongPress: () {
+                    scoreState.reduceScoreLeft();
+                    scoreState.calculateScore(context);
+                  },
+                  child: Container(
+                    color: Colors.red,
+                    child: Center(
+                      child: Text(
+                        scoreState.scoreLeft.toString(),
+                        style: style,
+                      ),
                     ),
                   ),
-                ))),
-        Expanded(
-            child: GestureDetector(
-          onTap: () {
-            scoreState.incrementScoreRight();
-            scoreState.calculateScore(context);
-          },
-          onLongPress: () {
-            scoreState.reduceScoreRight();
-            scoreState.calculateScore(context);
-          },
-          child: Container(
-            color: Colors.blue,
-            child: Center(
-              child: Text(
-                scoreState.scoreRight.toString(),
-                style: style,
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    scoreState.incrementScoreRight();
+                    scoreState.calculateScore(context);
+                  },
+                  onLongPress: () {
+                    scoreState.reduceScoreRight();
+                    scoreState.calculateScore(context);
+                  },
+                  child: Container(
+                    color: Colors.blue,
+                    child: Center(
+                      child: Text(
+                        scoreState.scoreRight.toString(),
+                        style: style,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // Pill-shaped container floating above the Row
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 100,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              color: Colors.grey[900],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('${scoreState.scoreLeft}',
+                            style: TextStyle(color: Colors.black)),
+                        SizedBox(width: 10,),
+                        IconButton(onPressed: () {
+                          scoreState.switchScores();
+                          scoreState.calculateScore(context);
+                        }, 
+                        icon: Icon(Icons.swap_horiz, color: Colors.black),
+                        ),
+                        SizedBox(width: 10,),
+                        Text('${scoreState.scoreRight}',
+                            style: TextStyle(color: Colors.black)),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        )),
-      ]),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            scoreState.resetScore();
-            scoreState.calculateScore(context);
-          },
-          child: const Icon(Icons.autorenew)),
+        onPressed: () {
+          scoreState.resetScore();
+          scoreState.calculateScore(context);
+        },
+        child: const Icon(Icons.autorenew),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
