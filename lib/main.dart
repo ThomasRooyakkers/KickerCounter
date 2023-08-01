@@ -1,9 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
@@ -12,20 +14,33 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-        create: (context) => ScoreState(),
-        child: MaterialApp(
-          title: 'KickerCounter',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
-            useMaterial3: true,
-          ),
-          home: const MyHomePage(),
-        ));
+      create: (context) => ScoreState(),
+      child: MaterialApp(
+        title: 'KickerCounter',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
+          useMaterial3: true,
+        ),
+        home: const MyHomePage(),
+      ),
+    );
   }
+}
+
+class Winner {
+  static const none = Winner._('None');
+  static const left = Winner._('Left');
+  static const right = Winner._('Right');
+
+  final String _value;
+
+  const Winner._(this._value);
+
+  @override
+  String toString() => _value;
 }
 
 class WinnerPopup extends StatelessWidget {
@@ -47,7 +62,7 @@ class WinnerPopup extends StatelessWidget {
           },
           child: const Align(
             alignment: Alignment.center,
-            child: (Text("Next Game")),
+            child: Text("Next Game"),
           ),
         ),
       ],
@@ -56,37 +71,55 @@ class WinnerPopup extends StatelessWidget {
 }
 
 class ScoreState extends ChangeNotifier {
-  var scoreLeft = 0;
-  var scoreRight = 0;
-  var winner = '';
+  int scoreLeft = 0;
+  int scoreRight = 0;
+  int totalScoreLeft = 0;
+  int totalScoreRight = 0;
   final scoreDifference = 2;
 
   void calculateScore(BuildContext context) {
-    if (scoreLeft == 11 && scoreRight < 10) {
-      winner = 'Left';
-      _showWinnerPopup(context, winner);
-    } else if (scoreRight == 11 && scoreLeft < 10) {
-      winner = 'Right';
-      _showWinnerPopup(context, winner);
-    } else if (scoreLeft >= 10 && scoreRight >= 10) {
+    if (scoreLeft >= 10 && scoreRight >= 10) {
       if ((scoreLeft - scoreRight).abs() >= scoreDifference) {
-        winner = scoreLeft > scoreRight ? 'Left' : 'Right';
+        final winner = scoreLeft > scoreRight ? Winner.left : Winner.right;
         _showWinnerPopup(context, winner);
-      } else {
-        winner = '';
+        _updateTotalScores(winner);
       }
+    } else if (scoreLeft == 11 && scoreRight < 10) {
+      _showWinnerPopup(context, Winner.left);
+      _updateTotalScores(Winner.left);
+    } else if (scoreRight == 11 && scoreLeft < 10) {
+      _showWinnerPopup(context, Winner.right);
+      _updateTotalScores(Winner.right);
     }
     notifyListeners();
   }
 
-  void _showWinnerPopup(BuildContext context, String winner) {
+  void _showWinnerPopup(BuildContext context, Winner winner) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return WinnerPopup(winner: winner);
+        return WinnerPopup(winner: winner.toString());
       },
     );
     resetScore();
+  }
+
+  void _updateTotalScores(Winner winner) {
+    if (winner == Winner.left) {
+      totalScoreLeft++;
+    } else if (winner == Winner.right) {
+      totalScoreRight++;
+    }
+  }
+
+  void switchScores() {
+    final temp = totalScoreRight;
+    totalScoreRight = totalScoreLeft;
+    totalScoreLeft = temp;
+
+    final scoreTemp = scoreRight;
+    scoreRight = scoreLeft;
+    scoreLeft = scoreTemp;
   }
 
   void resetScore() {
@@ -94,10 +127,10 @@ class ScoreState extends ChangeNotifier {
     scoreRight = 0;
   }
 
-  void switchScores() {
-    var temp = scoreLeft;
-    scoreLeft = scoreRight;
-    scoreRight = temp;
+  void hardResetScore() {
+    totalScoreLeft = 0;
+    totalScoreRight = 0;
+    resetScore();
   }
 
   void incrementScoreLeft() {
@@ -109,11 +142,15 @@ class ScoreState extends ChangeNotifier {
   }
 
   void reduceScoreLeft() {
-    scoreLeft--;
+    if (scoreLeft > 0) {
+      scoreLeft--;
+    }
   }
 
   void reduceScoreRight() {
-    scoreRight--;
+    if (scoreRight > 0) {
+      scoreRight--;
+    }
   }
 }
 
@@ -122,9 +159,20 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var scoreState = context.watch<ScoreState>();
     const style = TextStyle(
-        color: Colors.white, fontWeight: FontWeight.normal, fontSize: 96);
+      color: Colors.white,
+      fontWeight: FontWeight.normal,
+      fontSize: 96,
+    );
+    const gameStyle = TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w300,
+      fontSize: 24,
+    );
+
+    final scoreState = context.watch<ScoreState>();
+    final totalScoreLeft = scoreState.totalScoreLeft;
+    final totalScoreRight = scoreState.totalScoreRight;
 
     return Scaffold(
       body: Stack(
@@ -177,14 +225,10 @@ class MyHomePage extends StatelessWidget {
             ],
           ),
           // Pill-shaped container floating above the Row
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
+          SafeArea(
             child: Container(
               height: 100,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              color: Colors.grey[900],
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -198,18 +242,43 @@ class MyHomePage extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('${scoreState.scoreLeft}',
-                            style: TextStyle(color: Colors.black)),
-                        SizedBox(width: 10,),
-                        IconButton(onPressed: () {
-                          scoreState.switchScores();
-                          scoreState.calculateScore(context);
-                        }, 
-                        icon: Icon(Icons.swap_horiz, color: Colors.black),
+                        Text(
+                          '$totalScoreLeft',
+                          style: gameStyle,
                         ),
-                        SizedBox(width: 10,),
-                        Text('${scoreState.scoreRight}',
-                            style: TextStyle(color: Colors.black)),
+                        SizedBox(width: 10),
+                        IconButton(
+                          onPressed: () {
+                            scoreState.hardResetScore();
+                            scoreState.calculateScore(context);
+                          },
+                          icon: Icon(
+                            Icons.stop,
+                            color: Colors.grey,
+                          ),
+                          iconSize: 20,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            scoreState.switchScores();
+                            scoreState.calculateScore(context);
+                          },
+                          icon: Icon(Icons.swap_horiz, color: Colors.grey),
+                          iconSize: 20,
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            scoreState.resetScore();
+                            scoreState.calculateScore(context);
+                          },
+                          icon: Icon(Icons.autorenew, color: Colors.grey),
+                          iconSize: 20,
+                        ),
+                        SizedBox(width: 10),
+                        Text(
+                          '$totalScoreRight',
+                          style: gameStyle,
+                        ),
                       ],
                     ),
                   ),
@@ -219,14 +288,6 @@ class MyHomePage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          scoreState.resetScore();
-          scoreState.calculateScore(context);
-        },
-        child: const Icon(Icons.autorenew),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
