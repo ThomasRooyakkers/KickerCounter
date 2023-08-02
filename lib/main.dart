@@ -1,13 +1,9 @@
-import 'dart:ui';
+// ignore_for_file: use_key_in_widget_constructors
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -48,7 +44,7 @@ class WinnerPopup extends StatelessWidget {
   final int scoreLeft;
   final int scoreRight;
 
-  WinnerPopup(
+  const WinnerPopup(
       {required this.winner,
       required this.scoreLeft,
       required this.scoreRight});
@@ -64,11 +60,11 @@ class WinnerPopup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('$winner is the winner!'),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             '$scoreLeft - $scoreRight',
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-            ),
+            style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
       actions: [
@@ -271,13 +267,13 @@ class MyHomePage extends StatelessWidget {
                                   '$totalScoreLeft',
                                   style: gameStyle,
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 IconButton(
                                   onPressed: () {
                                     scoreState.hardResetScore();
                                     scoreState.calculateScore(context);
                                   },
-                                  icon: Icon(
+                                  icon: const Icon(
                                     Icons.stop,
                                     color: Colors.grey,
                                   ),
@@ -288,7 +284,7 @@ class MyHomePage extends StatelessWidget {
                                     scoreState.switchScores();
                                     scoreState.calculateScore(context);
                                   },
-                                  icon: Icon(Icons.swap_horiz,
+                                  icon: const Icon(Icons.swap_horiz,
                                       color: Colors.grey),
                                   iconSize: 20,
                                 ),
@@ -297,11 +293,11 @@ class MyHomePage extends StatelessWidget {
                                     scoreState.resetScore();
                                     scoreState.calculateScore(context);
                                   },
-                                  icon:
-                                      Icon(Icons.autorenew, color: Colors.grey),
+                                  icon: const Icon(Icons.autorenew,
+                                      color: Colors.grey),
                                   iconSize: 20,
                                 ),
-                                SizedBox(width: 10),
+                                const SizedBox(width: 10),
                                 Text(
                                   '$totalScoreRight',
                                   style: gameStyle,
