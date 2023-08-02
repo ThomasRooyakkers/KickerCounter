@@ -24,18 +24,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Winner {
-  static const none = Winner._('None');
-  static const left = Winner._('Left');
-  static const right = Winner._('Right');
-
-  final String _value;
-
-  const Winner._(this._value);
-
-  @override
-  String toString() => _value;
-}
+enum Winner { none, left, right }
 
 class WinnerPopup extends StatelessWidget {
   final String winner;
@@ -112,7 +101,7 @@ class ScoreState extends ChangeNotifier {
       context: context,
       builder: (BuildContext context) {
         return WinnerPopup(
-          winner: winner.toString(),
+          winner: winner.name,
           scoreLeft: scoreLeft,
           scoreRight: scoreRight,
         );
