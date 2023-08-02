@@ -1,5 +1,3 @@
-// ignore_for_file: use_key_in_widget_constructors
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +43,8 @@ class WinnerPopup extends StatelessWidget {
   final int scoreRight;
 
   const WinnerPopup(
-      {required this.winner,
+      {super.key,
+      required this.winner,
       required this.scoreLeft,
       required this.scoreRight});
 
