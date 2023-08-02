@@ -65,7 +65,10 @@ class WinnerPopup extends StatelessWidget {
         children: [
           Text('$winner is the winner!'),
           SizedBox(height: 20),
-          Text('$scoreLeft - $scoreRight'),
+          Text(
+            '$scoreLeft - $scoreRight',
+            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
         ],
       ),
       actions: [
