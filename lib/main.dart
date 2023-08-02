@@ -154,6 +154,7 @@ class ScoreState extends ChangeNotifier {
   }
 }
 
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
 
@@ -175,115 +176,122 @@ class MyHomePage extends StatelessWidget {
     final totalScoreRight = scoreState.totalScoreRight;
 
     return Scaffold(
-      body: Stack(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Row containing the GestureDetector widgets
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    scoreState.incrementScoreLeft();
-                    scoreState.calculateScore(context);
-                  },
-                  onLongPress: () {
-                    scoreState.reduceScoreLeft();
-                    scoreState.calculateScore(context);
-                  },
-                  child: Container(
-                    color: Colors.red,
-                    child: Center(
-                      child: Text(
-                        scoreState.scoreLeft.toString(),
-                        style: style,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: () {
-                    scoreState.incrementScoreRight();
-                    scoreState.calculateScore(context);
-                  },
-                  onLongPress: () {
-                    scoreState.reduceScoreRight();
-                    scoreState.calculateScore(context);
-                  },
-                  child: Container(
-                    color: Colors.blue,
-                    child: Center(
-                      child: Text(
-                        scoreState.scoreRight.toString(),
-                        style: style,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Pill-shaped container floating above the Row
-          SafeArea(
-            child: Container(
-              height: 100,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '$totalScoreLeft',
-                          style: gameStyle,
-                        ),
-                        SizedBox(width: 10),
-                        IconButton(
-                          onPressed: () {
-                            scoreState.hardResetScore();
-                            scoreState.calculateScore(context);
-                          },
-                          icon: Icon(
-                            Icons.stop,
-                            color: Colors.grey,
+          Expanded(
+            child: Stack(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          scoreState.incrementScoreLeft();
+                          scoreState.calculateScore(context);
+                        },
+                        onLongPress: () {
+                          scoreState.reduceScoreLeft();
+                          scoreState.calculateScore(context);
+                        },
+                        child: Container(
+                          color: Colors.red,
+                          child: Center(
+                            child: Text(
+                              scoreState.scoreLeft.toString(),
+                              style: style,
+                            ),
                           ),
-                          iconSize: 20,
                         ),
-                        IconButton(
-                          onPressed: () {
-                            scoreState.switchScores();
-                            scoreState.calculateScore(context);
-                          },
-                          icon: Icon(Icons.swap_horiz, color: Colors.grey),
-                          iconSize: 20,
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          scoreState.incrementScoreRight();
+                          scoreState.calculateScore(context);
+                        },
+                        onLongPress: () {
+                          scoreState.reduceScoreRight();
+                          scoreState.calculateScore(context);
+                        },
+                        child: Container(
+                          color: Colors.blue,
+                          child: Center(
+                            child: Text(
+                              scoreState.scoreRight.toString(),
+                              style: style,
+                            ),
+                          ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            scoreState.resetScore();
-                            scoreState.calculateScore(context);
-                          },
-                          icon: Icon(Icons.autorenew, color: Colors.grey),
-                          iconSize: 20,
-                        ),
-                        SizedBox(width: 10),
-                        Text(
-                          '$totalScoreRight',
-                          style: gameStyle,
-                        ),
-                      ],
+                      ),
+                    ),
+                  ],
+                ),
+                SafeArea(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      height: 100,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '$totalScoreLeft',
+                                  style: gameStyle,
+                                ),
+                                SizedBox(width: 10),
+                                IconButton(
+                                  onPressed: () {
+                                    scoreState.hardResetScore();
+                                    scoreState.calculateScore(context);
+                                  },
+                                  icon: Icon(
+                                    Icons.stop,
+                                    color: Colors.grey,
+                                  ),
+                                  iconSize: 20,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    scoreState.switchScores();
+                                    scoreState.calculateScore(context);
+                                  },
+                                  icon: Icon(Icons.swap_horiz, color: Colors.grey),
+                                  iconSize: 20,
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    scoreState.resetScore();
+                                    scoreState.calculateScore(context);
+                                  },
+                                  icon: Icon(Icons.autorenew, color: Colors.grey),
+                                  iconSize: 20,
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '$totalScoreRight',
+                                  style: gameStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
