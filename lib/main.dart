@@ -45,20 +45,35 @@ class Winner {
 
 class WinnerPopup extends StatelessWidget {
   final String winner;
+  final int scoreLeft;
+  final int scoreRight;
 
-  const WinnerPopup({required this.winner});
+  WinnerPopup(
+      {required this.winner,
+      required this.scoreLeft,
+      required this.scoreRight});
 
   @override
   Widget build(BuildContext context) {
+    var scoreState = context.watch<ScoreState>();
     return AlertDialog(
       title: const Center(
         child: Text("Winner!"),
       ),
-      content: Text('$winner is the winner!'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('$winner is the winner!'),
+          SizedBox(height: 20),
+          Text('$scoreLeft - $scoreRight'),
+        ],
+      ),
       actions: [
         TextButton(
           onPressed: () {
             Navigator.of(context).pop();
+            scoreState.resetScore();
+            scoreState.calculateScore(context);
           },
           child: const Align(
             alignment: Alignment.center,
@@ -98,10 +113,13 @@ class ScoreState extends ChangeNotifier {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return WinnerPopup(winner: winner.toString());
+        return WinnerPopup(
+          winner: winner.toString(),
+          scoreLeft: scoreLeft,
+          scoreRight: scoreRight,
+        );
       },
     );
-    resetScore();
   }
 
   void _updateTotalScores(Winner winner) {
@@ -153,7 +171,6 @@ class ScoreState extends ChangeNotifier {
     }
   }
 }
-
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -242,7 +259,8 @@ class MyHomePage extends StatelessWidget {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -267,7 +285,8 @@ class MyHomePage extends StatelessWidget {
                                     scoreState.switchScores();
                                     scoreState.calculateScore(context);
                                   },
-                                  icon: Icon(Icons.swap_horiz, color: Colors.grey),
+                                  icon: Icon(Icons.swap_horiz,
+                                      color: Colors.grey),
                                   iconSize: 20,
                                 ),
                                 IconButton(
@@ -275,7 +294,8 @@ class MyHomePage extends StatelessWidget {
                                     scoreState.resetScore();
                                     scoreState.calculateScore(context);
                                   },
-                                  icon: Icon(Icons.autorenew, color: Colors.grey),
+                                  icon:
+                                      Icon(Icons.autorenew, color: Colors.grey),
                                   iconSize: 20,
                                 ),
                                 SizedBox(width: 10),
