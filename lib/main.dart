@@ -26,18 +26,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Winner {
-  static const none = Winner._('None');
-  static const left = Winner._('Left');
-  static const right = Winner._('Right');
-
-  final String _value;
-
-  const Winner._(this._value);
-
-  @override
-  String toString() => _value;
-}
+enum Winner { none, left, right }
 
 class WinnerPopup extends StatelessWidget {
   final String winner;
