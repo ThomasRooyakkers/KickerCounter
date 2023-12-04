@@ -1,4 +1,5 @@
 PODS:
+<<<<<<< HEAD
   - Firebase/CoreOnly (10.15.0):
     - FirebaseCore (= 10.15.0)
   - firebase_core (2.17.0):
@@ -33,10 +34,19 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+=======
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+>>>>>>> 8d1838801f7e8da1ee1adc27fb7b45ab1d0055d0
   Flutter:
     :path: Flutter
 
 SPEC CHECKSUMS:
+<<<<<<< HEAD
   Firebase: 66043bd4579e5b73811f96829c694c7af8d67435
   firebase_core: 28e84c2a4fcf6a50ef83f47b145ded8c1fa331e4
   FirebaseCore: 2cec518b43635f96afe7ac3a9c513e47558abd2e
@@ -48,3 +58,10 @@ SPEC CHECKSUMS:
 PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
 
 COCOAPODS: 1.13.0
+=======
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+
+PODFILE CHECKSUM: 70d9d25280d0dd177a5f637cdb0f0b0b12c6a189
+
+COCOAPODS: 1.12.1
+>>>>>>> 8d1838801f7e8da1ee1adc27fb7b45ab1d0055d0
